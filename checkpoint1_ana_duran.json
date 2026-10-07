@@ -1,0 +1,193 @@
+{
+  "name": "checkpoint1_ana_duran",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "72f7f58f-5c1d-4bf9-996b-313acf32bddf",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b7d2e0c4-5a3f-4e1b-8c7d-000000000001"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# ROL Y CONTEXTO\nEres el asistente virtual corporativo de \"Servicios Informativos SA\", encargado de registrar y ayudar a los clientes a resolver problemas técnicos y a evaluar sus necesidades de automatización. Mantén siempre un tono profesional, preciso y cortés, en español estándar. Si no sabes la respuesta o no cuentas con la información, no la inventes: indícalo claramente.\n\n# ÁMBITO\n- Soporte técnico informático de primer nivel y relevamiento de solicitudes de automatización de procesos.\n- Todo lo que quede fuera de los servicios informáticos y de automatización de la empresa está fuera de tu alcance.\n\n# OBJETIVOS\n- Atender la consulta del usuario de manera clara, profesional y eficiente.\n- Solicitar siempre el correo electrónico del usuario antes de comenzar a dialogar sobre su caso.\n- Recopilar los datos necesarios (procesos actuales, sistemas/herramientas involucradas, volumen de transacciones y puntos de dolor) para evaluar y estructurar la solicitud.\n- Identificar el nivel de madurez digital del prospecto y la viabilidad técnica de su proyecto de automatización.\n- Orientar la conversación hacia el valor operativo y, puntualmente, hacia lo que el cliente quiere automatizar.\n\n# USO DE HERRAMIENTAS\n- Dispones de la herramienta \"registrar_caso_en_gmail\". Úsala únicamente cuando ya cuentes con el correo del usuario, la descripción del problema o solicitud y los datos relevados, y después de que el usuario confirme explícitamente que desea registrar el caso.\n- No uses la herramienta para consultas informativas, saludos o preguntas generales.\n\n# RESTRICCIONES EXPLÍCITAS DE ACCIÓN (lo que NO tienes permitido hacer)\n- No inventar capacidades técnicas, conectores ni funcionalidades de automatización que no estén confirmadas en la documentación oficial de la empresa.\n- No proporcionar cotizaciones finales ni compromisos de tiempo de entrega sin antes haber validado la arquitectura del proyecto con un especialista.\n- No ejecutar acciones invasivas en sistemas externos o APIs sin la confirmación y autorización explícita del usuario.\n- No tomar decisiones financieras o comerciales fuera de tus atribuciones.\n- Mantener estrictamente el alcance de la conversación dentro de los servicios informáticos y de automatización de la empresa.\n\n# REGLAS DE ESTILO Y LENGUAJE\n- Utiliza un lenguaje corporativo tradicional, formal, neutro y profesional, sin modismos.\n- Excluye por completo el lenguaje inclusivo (no uses \"x\", \"e\", \"@\" ni construcciones similares).\n\n# ESCALAMIENTO\n- Si la consulta requiere cotización, validación de arquitectura, decisiones comerciales o excede tu conocimiento, informa al usuario que el caso será derivado a un especialista y registra el caso con la herramienta (previa confirmación del usuario).\n- Si no cuentas con el dato solicitado, indícalo claramente y ofrece la derivación.",
+          "maxIterations": 5,
+          "returnIntermediateSteps": true
+        }
+      },
+      "id": "9fbb887c-10f1-401e-8491-04dcd2a574b2",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "id": "475f769c-4037-4a6d-a1c5-3074a94b8c04",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Usa esta herramienta para REGISTRAR un caso enviando un correo electrónico al equipo de soporte y automatización de Servicios Informativos SA.\n\nActívala de forma autónoma SOLO cuando se cumplan TODAS estas condiciones:\n1. El usuario describió un problema técnico concreto o una solicitud concreta de automatización (por ejemplo: sistema que falla, proceso manual repetitivo que quiere automatizar, integración entre herramientas).\n2. Ya obtuviste el correo electrónico del usuario.\n3. Ya relevaste, al menos, los sistemas/herramientas involucradas y el punto de dolor principal (idealmente también el proceso actual y el volumen de transacciones).\n4. El usuario confirmó de forma explícita que desea registrar el caso o ser contactado por un especialista.\n\nTambién úsala cuando el caso requiera escalamiento a un especialista (cotizaciones, validación de arquitectura, decisiones comerciales), siempre con confirmación previa del usuario.\n\nNO la uses para: saludos, consultas informativas generales, preguntas fuera del ámbito de servicios informáticos y de automatización, ni cuando falte el correo del usuario o su confirmación.\n\nAl usarla, redacta el asunto y el cuerpo en español formal, resumiendo: correo del cliente, descripción del problema o solicitud, sistemas involucradas, volumen, puntos de dolor y nivel de madurez digital percibido. No inventes datos que el usuario no haya dado.",
+        "sendTo": "anaduran78@gmail.com",
+        "subject": "={{ $fromAI('Asunto', 'Asunto breve y claro del caso, por ejemplo: Nuevo caso - problema técnico o solicitud de automatización', 'string') }}",
+        "message": "={{ $fromAI('Mensaje', 'Resumen formal del caso en español: correo del cliente, problema o solicitud, sistemas involucrados, volumen de transacciones, puntos de dolor y nivel de madurez digital', 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7decfc06-cff0-4b92-825c-1de298af0819",
+      "name": "registrar_caso_en_gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        208
+      ],
+      "webhookId": "b590ac2d-2186-440d-8c57-e3e8048366a4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZaFyIlPIObX3CxqO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "anaduran78@gmail.com",
+        "subject": "=[Log de observabilidad] Ejecución {{ $execution.id }} - Agente de soporte",
+        "emailType": "text",
+        "message": "=REPORTE AUTOMÁTICO DE SUPERVISIÓN\n\nMensaje del usuario:\n{{ $('Chat Trigger').item.json.chatInput }}\n\nRespuesta final del agente:\n{{ $json.output }}\n\nExecution Log (pasos de razonamiento y herramientas usadas):\n{{ JSON.stringify($json.intermediateSteps ?? [], null, 2) }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e420f93a-82d9-4c8d-99fe-691746012db6",
+      "name": "Notificar Log de Observabilidad",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        704,
+        0
+      ],
+      "webhookId": "c9e3f1d5-6b4a-4f2c-9d8e-000000000006",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZaFyIlPIObX3CxqO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "inclusionai/ling-3.0-flash-fin",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        160,
+        224
+      ],
+      "id": "642bea5f-d794-45da-b26d-7d60bf5232d8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "r9Qe1PB51puYRP3w",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registrar_caso_en_gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Notificar Log de Observabilidad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2a71366f-a089-4127-b105-bb998e66e2fd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0628ffaf1f902d427eb433e17c34e89b42a0134861e39fb4d320c367a9a6e9d2"
+  },
+  "nodeGroups": [],
+  "id": "XffSXb08dYWde9Iq",
+  "tags": []
+}
